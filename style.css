@@ -1,5 +1,5 @@
-/* تنسيق العد التنازلي */
-#countdownOverlay {
+  /* تنسيق العد التنازلي */
+  #countdownOverlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -10,14 +10,14 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    opacity: 1;
+    opacity: 0; /* ستظهر بعد المشهد الانتقالي الأولي */
     transition: opacity 1s ease;
   }
   #countdownNumber {
-    font-size: 10vw;
+    font-size: clamp(5vw, 8vw, 10vw);
     color: #fff;
   }
-  
+
   /* إعدادات الصفحة العامة */
   body {
     margin: 0;
@@ -29,7 +29,26 @@
     position: relative;
     font-family: Arial, sans-serif;
   }
-  
+
+  /* حاوية المشهد الأول؛ تبدأ بـ opacity 0 وتُرفع بعد المشهد الانتقالي */
+  #scene1Container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+
+  /* تحسين الأداء باستخدام will-change */
+  .image-container,
+  .button-container,
+  #mainExplosion,
+  #thirdSceneContainer,
+  #poemSceneContainer {
+    will-change: opacity, transform;
+  }
+
   /* المشهد الأول: صورة القمر وزر الإطلاق */
   .image-container {
     position: absolute;
@@ -40,8 +59,7 @@
     z-index: 1;
   }
   .image-container img {
-    width: 50vw;
-    max-width: 300px;
+    width: clamp(30vw, 50vw, 80vw);
     height: auto;
   }
   .button-container {
@@ -53,8 +71,8 @@
     transition: opacity 3s ease;
   }
   .launch-button {
-    width: clamp(80px, 20vw, 100px);
-    height: clamp(80px, 20vw, 100px);
+    width: clamp(50px, 15vw, 100px);
+    height: clamp(50px, 15vw, 100px);
     background: transparent;
     border: none;
     cursor: pointer;
@@ -63,18 +81,18 @@
     width: 100%;
     height: 100%;
   }
-  
+
   /* تأثيرات الألعاب النارية */
   .spark {
     position: absolute;
-    width: 6px;
-    height: 6px;
+    width: clamp(4px, 1vw, 6px);
+    height: clamp(4px, 1vw, 6px);
     border-radius: 50%;
     opacity: 1;
   }
   .firework-text {
     position: absolute;
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 2vw, 1.5rem);
     font-weight: bold;
     color: #fff;
     text-shadow: 0 0 10px #fff, 0 0 20px #f00;
@@ -82,7 +100,7 @@
     z-index: 3;
     transition: opacity 1s ease;
   }
-  
+
   /* Keyframes للألعاب النارية */
   @-webkit-keyframes spark-explode {
     0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
@@ -102,9 +120,22 @@
     50% { transform: translate(var(--dx), var(--dy)) scale(6); opacity: 1; }
     100% { transform: translate(var(--dx), var(--dy)) scale(7); opacity: 0; }
   }
+
+  /* Keyframes للتفجير الكبير */
+  @-webkit-keyframes big-spark-explode {
+    0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
+    50% { -webkit-transform: translate(var(--dx), var(--dy)) scale(8); opacity: 1; }
+    100% { -webkit-transform: translate(var(--dx), var(--dy)) scale(9); opacity: 0; }
+  }
+  @keyframes big-spark-explode {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    50% { transform: translate(var(--dx), var(--dy)) scale(8); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(9); opacity: 0; }
+  }
+
   .explosion-text {
     position: absolute;
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
     font-weight: bold;
     color: #fff;
     text-shadow: 0 0 10px #fff, 0 0 20px #f00;
@@ -113,33 +144,7 @@
     transition: opacity 2s ease;
     opacity: 0;
   }
-  
-  /* حاوية اللعبة النارية للمشهد الأول */
-  #mainExplosion {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: clamp(300px, 50vw, 400px);
-    height: clamp(300px, 50vh, 400px);
-    z-index: 10;
-    pointer-events: none;
-    transition: opacity 3s ease;
-  }
-  #mainExplosion .main-text {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: clamp(30px, 5vw, 40px);
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 0 10px #fff, 0 0 20px #f00;
-    opacity: 0;
-    transition: opacity 3s ease;
-  }
-  
+
   /* المشهد الثاني: عرض صورتين مع نصوص تحتها */
   #twoPicturesContainer {
     position: absolute;
@@ -162,25 +167,25 @@
     align-items: center;
   }
   .final-img-container img {
-    width: clamp(150px, 40vw, 300px);
+    width: clamp(30vw, 50vw, 80vw);
     height: auto;
   }
   .final-overlay-text {
     margin-top: 1vh;
-    font-size: clamp(30px, 5vw, 50px);
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: bold;
     color: #fff;
     text-shadow: 0 0 10px #fff, 0 0 20px #f00;
     pointer-events: none;
   }
   .center-text {
-    font-size: clamp(30px, 5vw, 50px);
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: bold;
     color: #fff;
     text-shadow: 0 0 10px #fff, 0 0 20px #f00;
     pointer-events: none;
   }
-  
+
   /* المشهد الثالث: كولاج الصور */
   #thirdSceneContainer {
     position: absolute;
@@ -195,11 +200,11 @@
   }
   #thirdSceneContainer img {
     position: absolute;
-    width: clamp(80px, 20vw, 150px);
+    width: clamp(10vw, 20vw, 30vw);
     height: auto;
     transition: transform 0.5s ease;
   }
-  
+
   /* المشهد الرابع: عرض القصيدة مع بالونات */
   #poemSceneContainer {
     position: absolute;
@@ -221,7 +226,7 @@
     z-index: 2;
   }
   #poemLine {
-    font-size: clamp(24px, 5vw, 30px);
+    font-size: clamp(1rem, 2vw, 1.5rem);
     font-weight: bold;
     color: #fff;
     text-align: center;
@@ -233,11 +238,11 @@
     margin: 10px;
     white-space: nowrap;
   }
-  
+
   /* بالونات المشهد الرابع */
   .balloon {
     position: absolute;
-    width: clamp(60px, 15vw, 80px);
+    width: clamp(5vw, 10vw, 15vw);
     height: auto;
     z-index: 1;
   }
@@ -281,7 +286,7 @@
     50% { transform: translate(-10px,-10px); opacity: 0.9; }
     100% { transform: translate(0,0); opacity: 0.9; }
   }
-  
+
   /* زر انتهاء الحفلة */
   #partyOverButton {
     position: absolute;
@@ -290,7 +295,7 @@
     transform: translateX(-50%);
     z-index: 50;
     padding: clamp(8px, 2vw, 10px) clamp(16px, 4vw, 20px);
-    font-size: clamp(20px, 4vw, 24px);
+    font-size: clamp(1rem, 2vw, 1.5rem);
     font-weight: bold;
     background-color: #ff4081;
     color: #fff;
@@ -300,7 +305,7 @@
     opacity: 0;
     transition: opacity 1s ease;
   }
-  
+
   /* الرسالة النهائية */
   #finalMessageContainer {
     position: absolute;
@@ -318,4 +323,69 @@
     color: #fff;
     text-shadow: 0 0 25px #fff, 0 0 35px #f00;
   }
-  
+
+  /* استعلام وسائط إضافي (اختياري) */
+  @media (max-width: 480px) {
+    #countdownNumber {
+      font-size: 8vw;
+    }
+    .image-container img {
+      width: 80vw;
+    }
+    .launch-button {
+      width: 60px;
+      height: 60px;
+    }
+    #fixedText, #preTransitionText, .firework-text {
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+    #partyOverButton {
+      font-size: 1rem;
+    }
+    #finalMessageContainer h1 {
+      font-size: 2rem;
+    }
+  }
+  /* الأساسيات - ضبط العرض الافتراضي */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* تصميم للأجهزة الصغيرة */
+  @media (max-width: 768px) {
+    #countdownNumber {
+        font-size: 6vw;
+    }
+
+    .image-container img {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .launch-button {
+        width: 50px;
+        height: 50px;
+        font-size: 0.8rem;
+    }
+
+    #fixedText, #preTransitionText, .firework-text {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    #partyOverButton {
+        font-size: 0.9rem;
+    }
+
+    #finalMessageContainer h1 {
+        font-size: 1.8rem;
+    }
+  }
