@@ -1,391 +1,473 @@
-  /* تنسيق العد التنازلي */
-  #countdownOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0; /* ستظهر بعد المشهد الانتقالي الأولي */
-    transition: opacity 1s ease;
-  }
-  #countdownNumber {
-    font-size: clamp(5vw, 8vw, 10vw);
-    color: #fff;
-  }
+      /* تنسيق العد التنازلي */
+      #countdownOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0; /* ستظهر بعد المشهد الانتقالي الأولي */
+        transition: opacity 1s ease;
+      }
+      #countdownNumber {
+        font-size: clamp(5vw, 8vw, 10vw);
+        color: #fff;
+      }
 
-  /* إعدادات الصفحة العامة */
+      /* إعدادات الصفحة العامة */
+      body {
+        margin: 0;
+        padding: 0;
+        background: url('https://i.postimg.cc/PqPhdYzq/959-7.jpg') no-repeat center center;
+        background-size: cover;
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+        font-family: Arial, sans-serif;
+      }
+
+      /* حاوية المشهد الأول؛ تبدأ بـ opacity 0 وتُرفع بعد المشهد الانتقالي */
+      #scene1Container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+
+      /* تحسين الأداء باستخدام will-change */
+      .image-container,
+      .button-container,
+      #mainExplosion,
+      #thirdSceneContainer,
+      #poemSceneContainer {
+        will-change: opacity, transform;
+      }
+
+      /* المشهد الأول: صورة القمر وزر الإطلاق */
+      .image-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: opacity 3s ease;
+        z-index: 1;
+      }
+      .image-container img {
+        width: clamp(30vw, 50vw, 80vw);
+        height: auto;
+      }
+      .button-container {
+        position: absolute;
+        bottom: 5vh;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        transition: opacity 3s ease;
+      }
+      .launch-button {
+        width: clamp(50px, 15vw, 100px);
+        height: clamp(50px, 15vw, 100px);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      .launch-button img {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* تأثيرات الألعاب النارية */
+      .spark {
+        position: absolute;
+        width: clamp(4px, 1vw, 6px);
+        height: clamp(4px, 1vw, 6px);
+        border-radius: 50%;
+        opacity: 1;
+      }
+      .firework-text {
+        position: absolute;
+        font-size: clamp(1rem, 2vw, 1.5rem);
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #fff, 0 0 20px #f00;
+        pointer-events: none;
+        z-index: 3;
+        transition: opacity 1s ease;
+      }
+
+      /* Keyframes للألعاب النارية */
+      @-webkit-keyframes spark-explode {
+        0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
+        100% { -webkit-transform: translate(var(--dx), var(--dy)) scale(3); opacity: 0; }
+      }
+      @keyframes spark-explode {
+        0% { transform: translate(0,0) scale(1); opacity: 1; }
+        100% { transform: translate(var(--dx), var(--dy)) scale(3); opacity: 0; }
+      }
+      @-webkit-keyframes spark-explode-main {
+        0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
+        50% { -webkit-transform: translate(var(--dx), var(--dy)) scale(6); opacity: 1; }
+        100% { -webkit-transform: translate(var(--dx), var(--dy)) scale(7); opacity: 0; }
+      }
+      @keyframes spark-explode-main {
+        0% { transform: translate(0,0) scale(1); opacity: 1; }
+        50% { transform: translate(var(--dx), var(--dy)) scale(6); opacity: 1; }
+        100% { transform: translate(var(--dx), var(--dy)) scale(7); opacity: 0; }
+      }
+
+      /* Keyframes للتفجير الكبير */
+      @-webkit-keyframes big-spark-explode {
+        0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
+        50% { -webkit-transform: translate(var(--dx), var(--dy)) scale(8); opacity: 1; }
+        100% { -webkit-transform: translate(var(--dx), var(--dy)) scale(9); opacity: 0; }
+      }
+      @keyframes big-spark-explode {
+        0% { transform: translate(0,0) scale(1); opacity: 1; }
+        50% { transform: translate(var(--dx), var(--dy)) scale(8); opacity: 1; }
+        100% { transform: translate(var(--dx), var(--dy)) scale(9); opacity: 0; }
+      }
+
+      .explosion-text {
+        position: absolute;
+        font-size: clamp(1.5rem, 3vw, 2.5rem);
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #fff, 0 0 20px #f00;
+        pointer-events: none;
+        z-index: 4;
+        transition: opacity 2s ease;
+        opacity: 0;
+      }
+
+      /* المشهد الثاني: عرض صورتين مع نصوص تحتها */
+      #twoPicturesContainer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        background-color: rgba(0,0,0,0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2vh;
+        opacity: 0;
+        transition: opacity 3s ease;
+      }
+      .final-img-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .final-img-container img {
+        width: clamp(30vw, 50vw, 80vw);
+        height: auto;
+      }
+      .final-overlay-text {
+        margin-top: 1vh;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #fff, 0 0 20px #f00;
+        pointer-events: none;
+      }
+      .center-text {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #fff, 0 0 20px #f00;
+        pointer-events: none;
+      }
+
+      /* المشهد الثالث: كولاج الصور */
+      #thirdSceneContainer {
+        position: absolute;
+        width: 90vw;
+        height: 90vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 30;
+        background: rgba(0,0,0,0.9);
+        transition: opacity 3s ease;
+      }
+      #thirdSceneContainer img {
+        position: absolute;
+        width: clamp(10vw, 20vw, 30vw);
+        height: auto;
+        transition: transform 0.5s ease;
+      }
+
+      /* المشهد الرابع: عرض القصيدة مع بالونات */
+      #poemSceneContainer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 40;
+        background: url('https://i.postimg.cc/PqPhdYzq/959-7.jpg') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 3s ease;
+      }
+      #poemTextDiv {
+        position: relative;
+        z-index: 2;
+      }
+      #poemLine {
+        font-size: clamp(1rem, 2vw, 1.5rem);
+        font-weight: bold;
+        color: #fff;
+        text-align: center;
+        padding: 15px;
+        background-color: rgba(0,0,0,0.5);
+        border-radius: 10px;
+        max-width: 90%;
+        line-height: 1.5;
+        margin: 10px;
+        white-space: nowrap;
+      }
+
+      /* بالونات المشهد الرابع */
+      .balloon {
+        position: absolute;
+        width: clamp(5vw, 10vw, 15vw);
+        height: auto;
+        z-index: 1;
+      }
+      @-webkit-keyframes balloon-topleft {
+        0% { -webkit-transform: translate(0,0); opacity: 0.9; }
+        50% { -webkit-transform: translate(10px,10px); opacity: 0.9; }
+        100% { -webkit-transform: translate(0,0); opacity: 0.9; }
+      }
+      @keyframes balloon-topleft {
+        0% { transform: translate(0,0); opacity: 0.9; }
+        50% { transform: translate(10px,10px); opacity: 0.9; }
+        100% { transform: translate(0,0); opacity: 0.9; }
+      }
+      @-webkit-keyframes balloon-topright {
+        0% { -webkit-transform: translate(0,0); opacity: 0.9; }
+        50% { -webkit-transform: translate(-10px,10px); opacity: 0.9; }
+        100% { -webkit-transform: translate(0,0); opacity: 0.9; }
+      }
+      @keyframes balloon-topright {
+        0% { transform: translate(0,0); opacity: 0.9; }
+        50% { transform: translate(-10px,10px); opacity: 0.9; }
+        100% { transform: translate(0,0); opacity: 0.9; }
+      }
+      @-webkit-keyframes balloon-bottomleft {
+        0% { -webkit-transform: translate(0,0); opacity: 0.9; }
+        50% { -webkit-transform: translate(10px,-10px); opacity: 0.9; }
+        100% { -webkit-transform: translate(0,0); opacity: 0.9; }
+      }
+      @keyframes balloon-bottomleft {
+        0% { transform: translate(0,0); opacity: 0.9; }
+        50% { transform: translate(10px,-10px); opacity: 0.9; }
+        100% { transform: translate(0,0); opacity: 0.9; }
+      }
+      @-webkit-keyframes balloon-bottomright {
+        0% { -webkit-transform: translate(0,0); opacity: 0.9; }
+        50% { -webkit-transform: translate(-10px,-10px); opacity: 0.9; }
+        100% { -webkit-transform: translate(0,0); opacity: 0.9; }
+      }
+      @keyframes balloon-bottomright {
+        0% { transform: translate(0,0); opacity: 0.9; }
+        50% { transform: translate(-10px,-10px); opacity: 0.9; }
+        100% { transform: translate(0,0); opacity: 0.9; }
+      }
+
+      /* زر انتهاء الحفلة */
+      #partyOverButton {
+        position: absolute;
+        bottom: 5vh;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
+        padding: clamp(8px, 2vw, 10px) clamp(16px, 4vw, 20px);
+        font-size: clamp(1rem, 2vw, 1.5rem);
+        font-weight: bold;
+        background-color: #ff4081;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+
+      /* الرسالة النهائية */
+      #finalMessageContainer {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 60;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+      #finalMessageContainer h1 {
+        font-size: clamp(80px, 10vw, 100px);
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 25px #fff, 0 0 35px #f00;
+      }
+
+      /* استعلام وسائط إضافي (اختياري) */
+      @media (max-width: 480px) {
+        #countdownNumber {
+          font-size: 8vw;
+        }
+        .image-container img {
+          width: 80vw;
+        }
+        .launch-button {
+          width: 60px;
+          height: 60px;
+        }
+        #fixedText, #preTransitionText, .firework-text {
+          font-size: clamp(2rem, 4vw, 3rem);
+        }
+        #partyOverButton {
+          font-size: 1rem;
+        }
+        #finalMessageContainer h1 {
+          font-size: 2rem;
+        }
+      }
+      /* الأساسيات - ضبط العرض الافتراضي */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-size: 16px;
+        line-height: 1.5;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      /* تصميم للأجهزة الصغيرة */
+      @media (max-width: 768px) {
+        #countdownNumber {
+            font-size: 6vw;
+        }
+
+        .image-container img {
+            width: 90%;
+            max-width: 300px;
+        }
+
+        .launch-button {
+            width: 50px;
+            height: 50px;
+            font-size: 0.8rem;
+        }
+
+        #fixedText, #preTransitionText, .firework-text {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        }
+
+        #partyOverButton {
+            font-size: 0.9rem;
+        }
+
+        #finalMessageContainer h1 {
+            font-size: 1.8rem;
+        }
+      }
+/* الأساسيات - ضبط العرض الافتراضي */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 10px;
+}
+
+/* ضبط الصور والعناصر لتناسب الشاشات الصغيرة */
+.image-container img {
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+}
+
+/* ضبط الأزرار */
+.launch-button {
+  width: 80px;
+  height: 80px;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+/* النصوص المتغيرة */
+#countdownNumber {
+  font-size: clamp(2rem, 6vw, 5rem);
+}
+
+#fixedText, #preTransitionText, .firework-text {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+}
+
+#partyOverButton {
+  font-size: 1rem;
+  padding: 10px 15px;
+}
+
+/* تنسيق الشاشات الصغيرة جداً */
+@media (max-width: 480px) {
   body {
-    margin: 0;
-    padding: 0;
-    background: url('https://i.postimg.cc/PqPhdYzq/959-7.jpg') no-repeat center center;
-    background-size: cover;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-    font-family: Arial, sans-serif;
+      padding: 5px;
   }
 
-  /* حاوية المشهد الأول؛ تبدأ بـ opacity 0 وتُرفع بعد المشهد الانتقالي */
-  #scene1Container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    opacity: 0;
-    transition: opacity 1s ease;
-  }
-
-  /* تحسين الأداء باستخدام will-change */
-  .image-container,
-  .button-container,
-  #mainExplosion,
-  #thirdSceneContainer,
-  #poemSceneContainer {
-    will-change: opacity, transform;
-  }
-
-  /* المشهد الأول: صورة القمر وزر الإطلاق */
-  .image-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: opacity 3s ease;
-    z-index: 1;
-  }
   .image-container img {
-    width: clamp(30vw, 50vw, 80vw);
-    height: auto;
+      width: 90%;
+      max-width: 280px;
   }
-  .button-container {
-    position: absolute;
-    bottom: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    transition: opacity 3s ease;
-  }
+
   .launch-button {
-    width: clamp(50px, 15vw, 100px);
-    height: clamp(50px, 15vw, 100px);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-  }
-  .launch-button img {
-    width: 100%;
-    height: 100%;
-  }
-
-  /* تأثيرات الألعاب النارية */
-  .spark {
-    position: absolute;
-    width: clamp(4px, 1vw, 6px);
-    height: clamp(4px, 1vw, 6px);
-    border-radius: 50%;
-    opacity: 1;
-  }
-  .firework-text {
-    position: absolute;
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 0 10px #fff, 0 0 20px #f00;
-    pointer-events: none;
-    z-index: 3;
-    transition: opacity 1s ease;
-  }
-
-  /* Keyframes للألعاب النارية */
-  @-webkit-keyframes spark-explode {
-    0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
-    100% { -webkit-transform: translate(var(--dx), var(--dy)) scale(3); opacity: 0; }
-  }
-  @keyframes spark-explode {
-    0% { transform: translate(0,0) scale(1); opacity: 1; }
-    100% { transform: translate(var(--dx), var(--dy)) scale(3); opacity: 0; }
-  }
-  @-webkit-keyframes spark-explode-main {
-    0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
-    50% { -webkit-transform: translate(var(--dx), var(--dy)) scale(6); opacity: 1; }
-    100% { -webkit-transform: translate(var(--dx), var(--dy)) scale(7); opacity: 0; }
-  }
-  @keyframes spark-explode-main {
-    0% { transform: translate(0,0) scale(1); opacity: 1; }
-    50% { transform: translate(var(--dx), var(--dy)) scale(6); opacity: 1; }
-    100% { transform: translate(var(--dx), var(--dy)) scale(7); opacity: 0; }
-  }
-
-  /* Keyframes للتفجير الكبير */
-  @-webkit-keyframes big-spark-explode {
-    0% { -webkit-transform: translate(0,0) scale(1); opacity: 1; }
-    50% { -webkit-transform: translate(var(--dx), var(--dy)) scale(8); opacity: 1; }
-    100% { -webkit-transform: translate(var(--dx), var(--dy)) scale(9); opacity: 0; }
-  }
-  @keyframes big-spark-explode {
-    0% { transform: translate(0,0) scale(1); opacity: 1; }
-    50% { transform: translate(var(--dx), var(--dy)) scale(8); opacity: 1; }
-    100% { transform: translate(var(--dx), var(--dy)) scale(9); opacity: 0; }
-  }
-
-  .explosion-text {
-    position: absolute;
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 0 10px #fff, 0 0 20px #f00;
-    pointer-events: none;
-    z-index: 4;
-    transition: opacity 2s ease;
-    opacity: 0;
-  }
-
-  /* المشهد الثاني: عرض صورتين مع نصوص تحتها */
-  #twoPicturesContainer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 20;
-    background-color: rgba(0,0,0,0.8);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2vh;
-    opacity: 0;
-    transition: opacity 3s ease;
-  }
-  .final-img-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .final-img-container img {
-    width: clamp(30vw, 50vw, 80vw);
-    height: auto;
-  }
-  .final-overlay-text {
-    margin-top: 1vh;
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 0 10px #fff, 0 0 20px #f00;
-    pointer-events: none;
-  }
-  .center-text {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 0 10px #fff, 0 0 20px #f00;
-    pointer-events: none;
-  }
-
-  /* المشهد الثالث: كولاج الصور */
-  #thirdSceneContainer {
-    position: absolute;
-    width: 90vw;
-    height: 90vh;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 30;
-    background: rgba(0,0,0,0.9);
-    transition: opacity 3s ease;
-  }
-  #thirdSceneContainer img {
-    position: absolute;
-    width: clamp(10vw, 20vw, 30vw);
-    height: auto;
-    transition: transform 0.5s ease;
-  }
-
-  /* المشهد الرابع: عرض القصيدة مع بالونات */
-  #poemSceneContainer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 40;
-    background: url('https://i.postimg.cc/PqPhdYzq/959-7.jpg') no-repeat center center;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 3s ease;
-  }
-  #poemTextDiv {
-    position: relative;
-    z-index: 2;
-  }
-  #poemLine {
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    font-weight: bold;
-    color: #fff;
-    text-align: center;
-    padding: 15px;
-    background-color: rgba(0,0,0,0.5);
-    border-radius: 10px;
-    max-width: 90%;
-    line-height: 1.5;
-    margin: 10px;
-    white-space: nowrap;
-  }
-
-  /* بالونات المشهد الرابع */
-  .balloon {
-    position: absolute;
-    width: clamp(5vw, 10vw, 15vw);
-    height: auto;
-    z-index: 1;
-  }
-  @-webkit-keyframes balloon-topleft {
-    0% { -webkit-transform: translate(0,0); opacity: 0.9; }
-    50% { -webkit-transform: translate(10px,10px); opacity: 0.9; }
-    100% { -webkit-transform: translate(0,0); opacity: 0.9; }
-  }
-  @keyframes balloon-topleft {
-    0% { transform: translate(0,0); opacity: 0.9; }
-    50% { transform: translate(10px,10px); opacity: 0.9; }
-    100% { transform: translate(0,0); opacity: 0.9; }
-  }
-  @-webkit-keyframes balloon-topright {
-    0% { -webkit-transform: translate(0,0); opacity: 0.9; }
-    50% { -webkit-transform: translate(-10px,10px); opacity: 0.9; }
-    100% { -webkit-transform: translate(0,0); opacity: 0.9; }
-  }
-  @keyframes balloon-topright {
-    0% { transform: translate(0,0); opacity: 0.9; }
-    50% { transform: translate(-10px,10px); opacity: 0.9; }
-    100% { transform: translate(0,0); opacity: 0.9; }
-  }
-  @-webkit-keyframes balloon-bottomleft {
-    0% { -webkit-transform: translate(0,0); opacity: 0.9; }
-    50% { -webkit-transform: translate(10px,-10px); opacity: 0.9; }
-    100% { -webkit-transform: translate(0,0); opacity: 0.9; }
-  }
-  @keyframes balloon-bottomleft {
-    0% { transform: translate(0,0); opacity: 0.9; }
-    50% { transform: translate(10px,-10px); opacity: 0.9; }
-    100% { transform: translate(0,0); opacity: 0.9; }
-  }
-  @-webkit-keyframes balloon-bottomright {
-    0% { -webkit-transform: translate(0,0); opacity: 0.9; }
-    50% { -webkit-transform: translate(-10px,-10px); opacity: 0.9; }
-    100% { -webkit-transform: translate(0,0); opacity: 0.9; }
-  }
-  @keyframes balloon-bottomright {
-    0% { transform: translate(0,0); opacity: 0.9; }
-    50% { transform: translate(-10px,-10px); opacity: 0.9; }
-    100% { transform: translate(0,0); opacity: 0.9; }
-  }
-
-  /* زر انتهاء الحفلة */
-  #partyOverButton {
-    position: absolute;
-    bottom: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 50;
-    padding: clamp(8px, 2vw, 10px) clamp(16px, 4vw, 20px);
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    font-weight: bold;
-    background-color: #ff4081;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 1s ease;
-  }
-
-  /* الرسالة النهائية */
-  #finalMessageContainer {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 60;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 1s ease;
-  }
-  #finalMessageContainer h1 {
-    font-size: clamp(80px, 10vw, 100px);
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 0 25px #fff, 0 0 35px #f00;
-  }
-
-  /* استعلام وسائط إضافي (اختياري) */
-  @media (max-width: 480px) {
-    #countdownNumber {
-      font-size: 8vw;
-    }
-    .image-container img {
-      width: 80vw;
-    }
-    .launch-button {
       width: 60px;
       height: 60px;
-    }
-    #fixedText, #preTransitionText, .firework-text {
-      font-size: clamp(2rem, 4vw, 3rem);
-    }
-    #partyOverButton {
-      font-size: 1rem;
-    }
-    #finalMessageContainer h1 {
-      font-size: 2rem;
-    }
-  }
-  /* الأساسيات - ضبط العرض الافتراضي */
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+      font-size: 0.8rem;
   }
 
-  body {
-    font-size: 16px;
-    line-height: 1.5;
-    max-width: 100%;
-    overflow-x: hidden;
+  #countdownNumber {
+      font-size: clamp(1.5rem, 5vw, 4rem);
   }
 
-  /* تصميم للأجهزة الصغيرة */
-  @media (max-width: 768px) {
-    #countdownNumber {
-        font-size: 6vw;
-    }
-
-    .image-container img {
-        width: 90%;
-        max-width: 300px;
-    }
-
-    .launch-button {
-        width: 50px;
-        height: 50px;
-        font-size: 0.8rem;
-    }
-
-    #fixedText, #preTransitionText, .firework-text {
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
-    }
-
-    #partyOverButton {
-        font-size: 0.9rem;
-    }
-
-    #finalMessageContainer h1 {
-        font-size: 1.8rem;
-    }
+  #fixedText, #preTransitionText, .firework-text {
+      font-size: clamp(1.2rem, 4vw, 2.5rem);
   }
+
+  #partyOverButton {
+      font-size: 0.9rem;
+      padding: 8px 12px;
+  }
+
+  #finalMessageContainer h1 {
+      font-size: 1.5rem;
+  }
+}
